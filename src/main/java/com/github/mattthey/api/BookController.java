@@ -1,21 +1,31 @@
 package com.github.mattthey.api;
 
 import com.github.mattthey.api.dto.BookDto;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
 @RequestMapping("/api/books")
 public interface BookController {
-    List<BookDto> getAllBooks(Integer offset, Integer limit);
 
-    BookDto getBookById(int id);
+    @GetMapping("/")
+    List<BookDto> getAllBooks();
 
-    BookDto createBook(BookDto bookDto);
+    @PostMapping("/")
+    BookDto createBook(@RequestBody BookDto bookDto);
 
-    BookDto updateBook(long id, BookDto bookDto);
+    @GetMapping("/{id}")
+    BookDto getBookById(@PathVariable Long id);
 
-    BookDto deleteBook(Long id);
+    @PutMapping("/{id}")
+    void updateBook(@PathVariable Long id, @RequestBody BookDto bookDto);
+
+    @DeleteMapping("/{id}")
+    void deleteBook(@PathVariable Long id);
+
+    @GetMapping("/category/{id}")
+    List<BookDto> getBooksWithSpecifiedCategory(@PathVariable Long id);
+
+    @GetMapping("/authors_books/{id}")
+    List<BookDto> getBooksFromAuthor(@PathVariable Long id);
 }
