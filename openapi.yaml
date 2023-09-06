@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Resulting Open API file
-  description: Merged files from Studio and web-ui-module
+  description: asd
   version: 1.0-SNAPSHOT
 servers:
   - url: ..

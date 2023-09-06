@@ -1,6 +1,6 @@
 plugins {
     id("java")
-    id "org.openapi.generator" version "6.6.0"
+    id 'org.liquibase.gradle' version '2.2.0'
 }
 
 group = "com.github.mattthey"
@@ -25,12 +25,34 @@ configurations {
     }
 }
 
+liquibase {
+    activities {
+         main {
+            changelogFile 'src/main/resources/changelogs/init_db.sql'
+            url 'jdbc:postgresql://localhost:5432/elementary'
+            driver 'org.postgresql.Driver'
+            username 'user'
+            password 'password'
+        }
+    }
+}
+
 dependencies {
-    implementation "org.springframework.boot:spring-boot-starter-web:${springVersion}"
+    implementation 'org.springframework.boot:spring-boot-starter-web:' + springVersion
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+    implementation 'org.springframework:spring-jdbc:6.0.11'
+    implementation 'com.zaxxer:HikariCP:5.0.1'
+
+    runtimeOnly 'org.postgresql:postgresql:42.6.0'
+
+    liquibaseRuntime 'org.postgresql:postgresql:42.6.0'
+    liquibaseRuntime 'org.liquibase:liquibase-core:4.23.1'
+    liquibaseRuntime 'info.picocli:picocli:4.7.5'
 
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
 
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 
     testImplementation "org.springframework.boot:spring-boot-starter-test:${springVersion}"
 }
