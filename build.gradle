@@ -1,0 +1,40 @@
+plugins {
+    id("java")
+    id "org.openapi.generator" version "6.6.0"
+}
+
+group = "com.github.mattthey"
+version = "1.0-SNAPSHOT"
+
+java {
+    sourceCompatibility = '17'
+}
+
+def springVersion = '3.1.3'
+def lombokVersion = '1.18.28'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+// config for lombok
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+dependencies {
+    implementation "org.springframework.boot:spring-boot-starter-web:${springVersion}"
+
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+    testImplementation "org.springframework.boot:spring-boot-starter-test:${springVersion}"
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
