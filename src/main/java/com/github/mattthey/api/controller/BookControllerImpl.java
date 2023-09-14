@@ -18,7 +18,7 @@ public class BookControllerImpl implements BookController {
     }
 
     @Override
-    public List<BookDto> getAllBooks(Integer offset, Integer limit) {
+    public List<BookDto> getAllBooks() {
         return bookService.getAllBooks();
     }
 
