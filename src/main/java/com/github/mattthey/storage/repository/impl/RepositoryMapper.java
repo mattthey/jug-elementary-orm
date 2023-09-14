@@ -1,4 +1,4 @@
-package com.github.mattthey.storage.repository;
+package com.github.mattthey.storage.repository.impl;
 
 import com.github.mattthey.storage.entity.AuthorEntity;
 import com.github.mattthey.storage.entity.BookEntity;
@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
-import static com.github.mattthey.storage.repository.QueriesProvider.*;
+import static com.github.mattthey.storage.repository.impl.QueriesProvider.*;
 
 public class RepositoryMapper {
     private RepositoryMapper()

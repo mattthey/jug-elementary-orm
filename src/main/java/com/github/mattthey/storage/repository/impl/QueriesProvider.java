@@ -1,4 +1,4 @@
-package com.github.mattthey.storage.repository;
+package com.github.mattthey.storage.repository.impl;
 
 public class QueriesProvider {
     private QueriesProvider()
