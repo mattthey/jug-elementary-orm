@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,9 +31,9 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<BookDto> getAllBooks() {
-        return bookRepository.findAll().stream()
-                .map(bookMapper::toDto)
-                .toList();
+        final var bookDtos = new LinkedList<BookDto>();
+        bookRepository.findAll().forEach(book -> bookDtos.add(bookMapper.toDto(book)));
+        return Collections.unmodifiableList(bookDtos);
     }
 
     @Override
@@ -48,7 +50,7 @@ public class BookServiceImpl implements BookService {
 
         final BookEntity entity = bookMapper.toEntity(bookDto);
         entity.setId(null);
-        return bookMapper.toDto(bookRepository.create(entity));
+        return bookMapper.toDto(bookRepository.save(entity));
     }
 
     @Override
@@ -69,7 +71,7 @@ public class BookServiceImpl implements BookService {
         }
 
         final BookEntity entity = bookMapper.toEntity(bookDto);
-        bookRepository.update(entity);
+        bookRepository.save(entity);
     }
 
     @Override

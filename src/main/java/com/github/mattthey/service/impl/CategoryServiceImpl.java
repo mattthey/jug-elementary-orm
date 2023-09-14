@@ -31,7 +31,7 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto createCategory(CategoryDto categoryDto) {
         final CategoryEntity categoryEntity = categoryMapper.toEntity(categoryDto);
         categoryEntity.setId(null);
-        return categoryMapper.toDto(categoryRepository.create(categoryEntity));
+        return categoryMapper.toDto(categoryRepository.save(categoryEntity));
     }
 
     @Override
@@ -47,7 +47,7 @@ public class CategoryServiceImpl implements CategoryService {
         }
         final CategoryEntity categoryEntity = categoryMapper.toEntity(categoryDto);
         categoryEntity.setId(id);
-        categoryRepository.update(categoryEntity);
+        categoryRepository.save(categoryEntity);
     }
 
     @Override

@@ -18,7 +18,7 @@ public class AuthorControllerImpl implements AuthorController {
     }
 
     @Override
-    public List<AuthorDto> getAllAuthors(Integer offset, Integer limit) {
+    public List<AuthorDto> getAllAuthors() {
         return authorService.getAllAuthors();
     }
 

@@ -1,99 +1,26 @@
 package com.github.mattthey.storage.repository;
 
 import com.github.mattthey.storage.entity.CategoryEntity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
+import com.github.mattthey.storage.repository.impl.QueriesProvider;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-import static com.github.mattthey.storage.repository.QueriesProvider.*;
-import static com.github.mattthey.storage.repository.RepositoryMapper.convertCategory;
-import static com.github.mattthey.storage.repository.RepositoryMapper.convertCollectionCategory;
+public interface CategoryRepository extends CrudRepository<CategoryEntity, Long> {
+    CategoryEntity save(CategoryEntity categoryEntity);
 
-@Repository
-public class CategoryRepository {
+    Iterable<CategoryEntity> findAll();
 
-    private final DataSource dataSource;
+    Optional<CategoryEntity> findById(Long id);
 
-    @Autowired
-    public CategoryRepository(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
+    @Query(nativeQuery = true, value = QueriesProvider.GET_ALL_SUBCATEGORIES)
+    List<CategoryEntity> findAllSubcategories(@Param("id") Long id);
 
-    public CategoryEntity create(CategoryEntity categoryEntity) {
-        final var createdCategoryEntity = new CategoryEntity(null, categoryEntity.getTitle(), categoryEntity.getParentCategoryId());
-        try (var connection = dataSource.getConnection();
-             var statement = connection.prepareStatement(INSERT_CATEGORY)) {
-            statement.setString(1, categoryEntity.getTitle());
-            statement.setObject(2, categoryEntity.getParentCategoryId());
-            final var resultSet = statement.executeQuery();
-            resultSet.next();
-            createdCategoryEntity.setId(resultSet.getLong(CATEGORY_ID));
-            return createdCategoryEntity;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public List<CategoryEntity> findAll() {
-        try (var connection = dataSource.getConnection();
-             var statement = connection.prepareStatement(GET_ALL_CATEGORY)) {
-            final var resultSet = statement.executeQuery();
-            return convertCollectionCategory(resultSet);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public Optional<CategoryEntity> findById(Long id) {
-        try (var connection = dataSource.getConnection();
-             var statement = connection.prepareStatement(GET_CATEGORY_BY_ID)) {
-            statement.setLong(1, id);
-            final var resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return Optional.ofNullable(convertCategory(resultSet));
-            } else {
-                return Optional.empty();
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void update(CategoryEntity categoryEntity) {
-        try (var connection = dataSource.getConnection();
-             var statement = connection.prepareStatement(UPDATE_CATEGORY)) {
-            statement.setLong(1, categoryEntity.getParentCategoryId());
-            statement.setString(2, categoryEntity.getTitle());
-            statement.setLong(3, categoryEntity.getId());
-            statement.execute();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public List<CategoryEntity> findAllSubcategories(Long id) {
-        try (var connection = dataSource.getConnection();
-             var statement = connection.prepareStatement(GET_ALL_SUBCATEGORIES)) {
-            statement.setLong(1, id);
-            statement.setLong(2, id);
-            final var resultSet = statement.executeQuery();
-            return convertCollectionCategory(resultSet);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void deleteCategoryWithSubcategories(Long id) {
-        try (var connection = dataSource.getConnection();
-             var statement = connection.prepareStatement(DELETE_CATEGORY_WITH_SUBCATEGORIES)) {
-            statement.setLong(1, id);
-            statement.execute();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Modifying
+    @Query(nativeQuery = true, value = QueriesProvider.DELETE_CATEGORY_WITH_SUBCATEGORIES)
+    void deleteCategoryWithSubcategories(@Param("id") Long id);
 }

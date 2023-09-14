@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,9 +27,9 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public List<AuthorDto> getAllAuthors() {
-        return authorRepository.findAll().stream()
-                .map(authorMapper::toDto)
-                .toList();
+        final var authorDtos = new LinkedList<AuthorDto>();
+        authorRepository.findAll().forEach(entity -> authorDtos.add(authorMapper.toDto(entity)));
+        return Collections.unmodifiableList(authorDtos);
     }
 
     @Override
@@ -39,7 +41,7 @@ public class AuthorServiceImpl implements AuthorService {
     public AuthorDto createAuthor(AuthorDto authorDto) {
         final AuthorEntity entity = authorMapper.toEntity(authorDto);
         entity.setId(null);
-        return authorMapper.toDto(authorRepository.create(entity));
+        return authorMapper.toDto(authorRepository.save(entity));
     }
 
     @Override
@@ -50,7 +52,7 @@ public class AuthorServiceImpl implements AuthorService {
         }
         final AuthorEntity authorEntity = authorOpt.get();
         authorEntity.setName(authorDto.name());
-        authorRepository.update(authorEntity);
+        authorRepository.save(authorEntity);
     }
 
     @Override
