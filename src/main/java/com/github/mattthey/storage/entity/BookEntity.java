@@ -7,7 +7,6 @@ import lombok.*;
 @Getter
 @Setter
 @EqualsAndHashCode(of = "id")
-@Data
 
 public class BookEntity {
     private Long id;

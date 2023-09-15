@@ -9,10 +9,7 @@ import java.util.List;
 public interface AuthorController {
 
     @GetMapping("/")
-    List<AuthorDto> getAllAuthors(
-            @RequestParam(name = "offset", required = false) Integer offset,
-            @RequestParam(name = "limit", required = false) Integer limit
-    );
+    List<AuthorDto> getAllAuthors();
 
     @GetMapping("/{id}")
     AuthorDto getAuthorById(@PathVariable Long id);

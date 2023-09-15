@@ -38,7 +38,7 @@ public class ApplicationTest {
 
     @Test
     @Rollback
-    void test() {
+    void testCrateBooksWithAnyAuthors() {
         // создаем 3 авторов
         final List<AuthorDto> authorDtos = List.of(
                 new AuthorDto(0L, "Author1"),

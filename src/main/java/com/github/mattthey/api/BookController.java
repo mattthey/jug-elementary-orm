@@ -9,10 +9,7 @@ import java.util.List;
 public interface BookController {
 
     @GetMapping("/")
-    List<BookDto> getAllBooks(
-            @RequestParam(name = "offset", required = false) Integer offset,
-            @RequestParam(name = "limit", required = false) Integer limit
-    );
+    List<BookDto> getAllBooks();
 
     @PostMapping("/")
     BookDto createBook(@RequestBody BookDto bookDto);
