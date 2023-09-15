@@ -1,67 +1,53 @@
 package com.github.mattthey.storage.repository.impl;
 
+import com.github.mattthey.gen.public_.tables.records.AuthorRecord;
+import com.github.mattthey.gen.public_.tables.records.BookRecord;
+import com.github.mattthey.gen.public_.tables.records.CategoryRecord;
 import com.github.mattthey.storage.entity.AuthorEntity;
 import com.github.mattthey.storage.entity.BookEntity;
 import com.github.mattthey.storage.entity.CategoryEntity;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.LinkedList;
-import java.util.List;
-
-import static com.github.mattthey.storage.repository.impl.QueriesProvider.*;
+import org.jooq.Record3;
 
 public class RepositoryMapper {
     private RepositoryMapper()
     {
     }
 
-
-    static List<AuthorEntity> convertCollectionAuthors(ResultSet resultSet) throws SQLException {
-        final var result = new LinkedList<AuthorEntity>();
-        while (resultSet.next()) {
-            result.add(convertAuthor(resultSet));
-        }
-        return result;
-    }
-
-    static AuthorEntity convertAuthor(ResultSet resultSet) throws SQLException {
-        return new AuthorEntity(resultSet.getLong(AUTHOR_ID), resultSet.getString(AUTHOR_NAME));
-    }
-
-    static List<CategoryEntity> convertCollectionCategory(ResultSet resultSet) throws SQLException {
-        final var result = new LinkedList<CategoryEntity>();
-        while (resultSet.next()) {
-            result.add(convertCategory(resultSet));
-        }
-        return result;
-    }
-
-    static CategoryEntity convertCategory(ResultSet resultSet) throws SQLException {
-        final var categoryId = resultSet.getObject(CATEGORY_ID);
-        if (categoryId == null) {
+    public static AuthorEntity toEntity(AuthorRecord record) {
+        if (record.getId() == null) {
             return null;
         }
-        return new CategoryEntity(
-                (Long) categoryId,
-                resultSet.getString(CATEGORY_TITLE),
-                (Long) resultSet.getObject(CATEGORY_PARENT_CATEGORY_ID));
+        return new AuthorEntity(record.getId(), record.getName());
     }
 
-    static List<BookEntity> convertCollectionBookEntity(ResultSet resultSet) throws SQLException {
-        final var result = new LinkedList<BookEntity>();
-        while (resultSet.next()) {
-            result.add(convertBookEntity(resultSet));
+    public static AuthorRecord toRecord(AuthorEntity entity) {
+        return new AuthorRecord(entity.getId(), entity.getName());
+    }
+
+    public static CategoryEntity toEntity(CategoryRecord record) {
+        if (record.getId() == null) {
+            return null;
         }
-        return result;
+        return new CategoryEntity(record.getId(), record.getTitle(), record.getParentCategoryId());
     }
 
-    static BookEntity convertBookEntity(ResultSet resultSet) throws SQLException {
-        return new BookEntity(
-                resultSet.getLong(BOOK_ID),
-                resultSet.getString(BOOK_TITLE),
-                convertAuthor(resultSet),
-                convertCategory(resultSet)
+    public static CategoryRecord toRecord(CategoryEntity entity) {
+        return new CategoryRecord(entity.getId(), entity.getTitle(), entity.getParentCategoryId());
+    }
+
+    public static BookRecord toRecord(BookEntity bookEntity) {
+        final AuthorEntity author = bookEntity.getAuthor();
+        final CategoryEntity category = bookEntity.getCategory();
+        return new BookRecord(bookEntity.getId(), bookEntity.getTitle(),
+                author != null ? author.getId() : null,
+                category != null ? category.getId() : null
         );
+    }
+
+    public static BookEntity toEntity(Record3<BookRecord, AuthorRecord, CategoryRecord> record3) {
+        final BookRecord bookRecord = record3.component1();
+        final AuthorRecord authorRecord = record3.component2();
+        final CategoryRecord categoryRecord = record3.component3();
+        return new BookEntity(bookRecord.getId(), bookRecord.getTitle(), toEntity(authorRecord), toEntity(categoryRecord));
     }
 }
